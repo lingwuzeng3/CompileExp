@@ -9,9 +9,13 @@ public class Main {
   private static final Set<String> KEYWORDS = new HashSet<>(Arrays.asList(
       "if", "then", "else", "while", "do"));
 
-  // 运算符和界符集合
-  private static final Set<Character> OPERATORS = new HashSet<>(Arrays.asList(
-      '+', '-', '*', '/', '>', '<', '=', '(', ')', ';'));
+  // 单字符运算符和界符集合
+  private static final Set<Character> SINGLE_OPERATORS = new HashSet<>(Arrays.asList(
+      '+', '-', '*', '/', '>', '<', '=', '(', ')', ';', '!', '&', '|', '?', ':'));
+
+  // 多字符运算符集合（双目和三目运算符）
+  private static final Set<String> MULTI_OPERATORS = new HashSet<>(Arrays.asList(
+      "==", "!=", ">=", "<=", "&&", "||", "++", "--", "+=", "-=", "*=", "/=", "?:"));
 
   public static void main(String[] args) {
     try {
@@ -40,10 +44,9 @@ public class Main {
           continue;
         }
 
-        // 处理标识符和关键字 标识符正则式：<字母|_>(<字母>|<数字字符>|_)*
+        // 处理标识符和关键字
         if (Character.isLetter(ch) || ch == '_') {
           StringBuilder token = new StringBuilder();
-          // 提取字符串，直到遇到非字母数字字符
           while (pos < line.length() &&
               (Character.isLetterOrDigit(line.charAt(pos)) || line.charAt(pos) == '_')) {
             token.append(line.charAt(pos));
@@ -51,25 +54,20 @@ public class Main {
           }
           String tokenStr = token.toString();
 
-          //判断这个字符串是不是在关键字集合中
           if (KEYWORDS.contains(tokenStr)) {
-            //<关键字, ->
             System.out.println("<" + tokenStr + " , ->");
           } else {
-            //<0, 标识符>
             System.out.println("<0 , " + tokenStr + ">");
           }
         }
 
-        // 处理数字，十进制整数正则式：0|(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*
+        // 处理数字
         else if (Character.isDigit(ch)) {
           if (ch == '0') {
-            // 可能是八进制、十六进制或单独的0，看下一个字符判断
             if (pos + 1 < line.length()) {
               char nextChar = line.charAt(pos + 1);
               if (nextChar == 'x' || nextChar == 'X') {
-                // 十六进制数
-                pos += 2; // 跳过0x
+                pos += 2;
                 StringBuilder hexNum = new StringBuilder();
                 while (pos < line.length() && isHexDigit(line.charAt(pos))) {
                   hexNum.append(line.charAt(pos));
@@ -77,7 +75,6 @@ public class Main {
                 }
                 System.out.println("<3 , " + hexNum.toString() + ">");
               } else if (isOctalDigit(nextChar)) {
-                // 八进制数
                 StringBuilder octNum = new StringBuilder();
                 while (pos < line.length() && isOctalDigit(line.charAt(pos))) {
                   octNum.append(line.charAt(pos));
@@ -85,17 +82,14 @@ public class Main {
                 }
                 System.out.println("<2 , " + octNum.toString() + ">");
               } else {
-                // 单独的0（十进制）
                 System.out.println("<1 , 0>");
                 pos++;
               }
             } else {
-              // 行末的0
               System.out.println("<1 , 0>");
               pos++;
             }
           } else {
-            // 十进制数（首位不为0）
             StringBuilder decNum = new StringBuilder();
             while (pos < line.length() && Character.isDigit(line.charAt(pos))) {
               decNum.append(line.charAt(pos));
@@ -105,12 +99,32 @@ public class Main {
           }
         }
 
-        // 处理运算符和界符，这里的运算符都是单目运算符，界符也是单个字符
-        //所以这里直接在OPERATORS集合中判断即可
-        else if (OPERATORS.contains(ch)) {
-          System.out.println("<" + ch + " , ->");
-          pos++;
+        // 改进的运算符处理逻辑（支持多字符运算符）
+        else if (SINGLE_OPERATORS.contains(ch)) {
+          // 检查是否为多字符运算符
+          if (pos + 1 < line.length()) {
+            String twoCharOp = line.substring(pos, pos + 2);
+            if (MULTI_OPERATORS.contains(twoCharOp)) {
+              // 处理双目运算符（如 ==, !=, >=, <=, &&, || 等）
+              System.out.println("<" + twoCharOp + " , ->");
+              pos += 2;
+            } else if (pos + 2 < line.length() && twoCharOp.equals("?:") &&
+                line.charAt(pos + 2) == ':') {
+              // 处理三目运算符 ?:
+              System.out.println("<?: , ->");
+              pos += 3;
+            } else {
+              // 单字符运算符
+              System.out.println("<" + ch + " , ->");
+              pos++;
+            }
+          } else {
+            // 行末的单字符运算符
+            System.out.println("<" + ch + " , ->");
+            pos++;
+          }
         }
+
         // 处理其他字符（跳过）
         else {
           pos++;

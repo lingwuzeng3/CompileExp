@@ -8,7 +8,7 @@ public class Main {
 
     G g = new G();
 
-    FileReader fileReader = new FileReader("src/Exp1/g.txt");
+    FileReader fileReader = new FileReader("docs/g.txt");
     BufferedReader bufferedReader = new BufferedReader(fileReader);
     String line = bufferedReader.readLine();
 

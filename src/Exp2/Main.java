@@ -19,7 +19,7 @@ public class Main {
 
   public static void main(String[] args) {
     try {
-      scan("src/Exp2/program.txt");
+      scan("docs/program.txt");
     } catch (Exception e) {
       System.out.println("文件读取错误: " + e.getMessage());
     }

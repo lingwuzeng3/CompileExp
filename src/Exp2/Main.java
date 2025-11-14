@@ -10,12 +10,12 @@ public class Main {
       "if", "then", "else", "while", "do"));
 
   // 单字符运算符和界符集合
-  private static final Set<Character> SINGLE_OPERATORS = new HashSet<>(Arrays.asList(
+  private static final Set<Character> SIN_OPS = new HashSet<>(Arrays.asList(
       '+', '-', '*', '/', '>', '<', '=', '(', ')', ';', '!', '&', '|', '?', ':'));
 
   // 多字符运算符集合（双目和三目运算符）
-  private static final Set<String> MULTI_OPERATORS = new HashSet<>(Arrays.asList(
-      "==", "!=", ">=", "<=", "&&", "||", "++", "--", "+=", "-=", "*=", "/=", "?:"));
+  private static final Set<String> MUL_OPS = new HashSet<>(Arrays.asList(
+      "==", "!=", ">=", "<=", "&&", "||", "++", "--", "+=", "-=", "*=", "/="));
 
   public static void main(String[] args) {
     try {
@@ -63,7 +63,7 @@ public class Main {
 
         // 处理数字
         else if (Character.isDigit(ch)) {
-          if (ch == '0') {
+          if (ch == '0') {//0开头的数字，可能是十六进制、八进制
             if (pos + 1 < line.length()) {
               char nextChar = line.charAt(pos + 1);
               if (nextChar == 'x' || nextChar == 'X') {
@@ -85,11 +85,11 @@ public class Main {
                 System.out.println("<1 , 0>");
                 pos++;
               }
-            } else {
+            } else {//行末的0，视为十进制的普通0
               System.out.println("<1 , 0>");
               pos++;
             }
-          } else {
+          } else {//非0开头的数字，即十进制
             StringBuilder decNum = new StringBuilder();
             while (pos < line.length() && Character.isDigit(line.charAt(pos))) {
               decNum.append(line.charAt(pos));
@@ -99,21 +99,16 @@ public class Main {
           }
         }
 
-        // 改进的运算符处理逻辑（支持多字符运算符）
-        else if (SINGLE_OPERATORS.contains(ch)) {
+        // 运算符处理
+        else if (SIN_OPS.contains(ch)) {
           // 检查是否为多字符运算符
           if (pos + 1 < line.length()) {
             String twoCharOp = line.substring(pos, pos + 2);
-            if (MULTI_OPERATORS.contains(twoCharOp)) {
-              // 处理双目运算符（如 ==, !=, >=, <=, &&, || 等）
+            if (MUL_OPS.contains(twoCharOp)) {
+              // 处理双目运算符
               System.out.println("<" + twoCharOp + " , ->");
               pos += 2;
-            } else if (pos + 2 < line.length() && twoCharOp.equals("?:") &&
-                line.charAt(pos + 2) == ':') {
-              // 处理三目运算符 ?:
-              System.out.println("<?: , ->");
-              pos += 3;
-            } else {
+            }else {
               // 单字符运算符
               System.out.println("<" + ch + " , ->");
               pos++;

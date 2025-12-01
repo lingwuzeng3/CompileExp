@@ -30,7 +30,7 @@ public class G {
  * @param str
  * @param V
  */
-  public void getVn(String str){
+  public void getVnOrVt(String str){
     String[] rights = str.split("\\|");
     for(String right_part:rights){
       for(char c:right_part.toCharArray()){
@@ -39,16 +39,7 @@ public class G {
           if(!Vn.contains(s)){
             Vn.add(s);
           }
-        }
-      }  
-    }
-  }
-
-  public void getVt(String str){
-    String[] rights = str.split("\\|");
-    for(String right_part:rights){
-      for(char c:right_part.toCharArray()){
-        if(Character.isLowerCase(c)){
+        }else if(Character.isLowerCase(c)){
           String s = String.valueOf(c);
           if(!Vt.contains(s)){
             Vt.add(s);

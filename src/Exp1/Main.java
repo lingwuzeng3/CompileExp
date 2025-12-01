@@ -44,18 +44,16 @@ public class Main {
           g.P.put(left, g.P.get(left) + "|" + right);
         }
 
-        // 提取非终结符，即提取大写字母
+        // 提取文法左边提取非终结符，即提取大写字母
         if (!g.Vn.contains(left)) {
           g.Vn.add(left);
         }
-        g.getVn(right);
 
-        // 提取终结符，即提取小写字母
-        g.getVt(right);
-        
-        
+        // 从产生式右边提取非终结符和终结符
+        g.getVnOrVt(right);
 
         line = bufferedReader.readLine();
+        
       }
 
     } catch (Exception e) {

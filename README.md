@@ -98,3 +98,72 @@ else
 ~~~
 
 ### 示例源代码（program.txt）
+
+## 实验三：LL(1)文法构造
+### 实验目的
+1. 编制一个能够将一个非LL（1）文法转换为LL（1）文法；
+2. 消除左递归；
+3. 消除回溯。 
+
+### 实验内容
+1. 更改实验一的文法G的数据结构为,其中Set<String>便于消除相同元素，
+Map套list方便后续消除左递归和提取公因子。
+```java
+// 非终结符集合
+    public Set<String> Vn = new HashSet<String>();
+    // 终结符集合
+    public Set<String> Vt = new HashSet<String>();
+    // 开始符号
+    public String S;
+    // 产生式集合
+    public HashMap<String, ArrayList<String>> P = new HashMap<String, ArrayList<String>>();
+```
+2. 设置Util工具类，其中包含消除左递归和提取公因子的方法。
+3. 读取实验一的文法文件txt，构建LL(1)文法并输出
+
+### 核心功能
+- **消除左递归**：实现直接和间接左递归的消除算法
+- **提取公因子**：对每个非终结符的所有产生式，提取公共前缀作为新的产生式
+
+### 测试数据
+~~~
+S->Qc|c|cab;
+Q->Rb|b;
+R->Sa|a;
+~~~
+
+### 输出结构
+~~~
+原始文法:
+Vn = [Q, R, S]
+Vt = [a, b, c]
+S = S
+P = {Q=[Rb, b], R=[Sa, a], S=[Qc, c, cab]}
+文法G:
+Q -> Rb | b
+R -> Sa | a
+S -> Qc | c | cab
+
+消除左递归后的文法:
+Vn = [Q, R, S, S']
+Vt = [a, b, c]
+S = S
+P = {Q=[Rb, b], R=[Sa, a], S=[abcS', bcS', cS', cabS'], S'=[abcS', ε]}
+文法G:
+Q -> Rb | b
+R -> Sa | a
+S -> abcS' | bcS' | cS' | cabS'
+S' -> abcS' | ε
+
+提取左因子后的文法:
+Vn = [Q, R, S, S', S'1]
+Vt = [a, b, c]
+S = S
+P = {Q=[Rb, b], R=[Sa, a], S=[abcS', bcS', cS'1], S'=[abcS', ε], S'1=[S', abS']}
+文法G:
+Q -> Rb | b
+R -> Sa | a
+S -> abcS' | bcS' | cS'1
+S' -> abcS' | ε
+S'1 -> S' | abS'
+~~~

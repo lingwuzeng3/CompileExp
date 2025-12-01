@@ -1,0 +1,5 @@
+Q->Rb|b;
+R->Sa|a;
+S->abcS'|bcS'|cS'1;
+S'->abcS'|ε;
+S'1->S'|abS';

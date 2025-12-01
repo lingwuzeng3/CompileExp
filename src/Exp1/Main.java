@@ -2,6 +2,7 @@ package Exp1;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 public class Main {
   public static void main(String[] args) throws Exception {
@@ -38,11 +39,17 @@ public class Main {
         String right = str[1].trim().replace(";", "");
 
         // 提取产生式
-        if (!g.P.containsKey(left)) {
-          g.P.put(left, right);
-        } else {
-          g.P.put(left, g.P.get(left) + "|" + right);
+        ArrayList<String> productions;
+        if(g.P.get(left) == null){
+          productions = new ArrayList<>();
+        }else{
+          productions = g.P.get(left);
         }
+        String[] rights = right.split("\\|");
+        for(String right_part:rights){
+          productions.add(right_part);
+        }
+        g.P.put(left, productions);
 
         // 提取文法左边提取非终结符，即提取大写字母
         if (!g.Vn.contains(left)) {

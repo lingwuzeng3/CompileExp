@@ -7,18 +7,20 @@ import Exp3.Utils.Util;
 public class CreateLL1 {
   public static void main(String[] args){
 
-    String filename = "docs/exp3.txt";
-    G g = Main.readGrammer(filename);
+    String filename = "exp3";
+    G g = Main.readGrammer("docs/"+filename +".txt");
     System.out.println("原始文法:");
     g.printGrammar();
 
-    g = Util.eliminateLeftRecursion(g);
+    g = Util.delRecursion(g);
     System.out.println("消除左递归后的文法:");
     g.printGrammar();
 
-    g = Util.extractLeftFactor(g);//TODO可能这里出了点问题，需要修正P的结构
+    g = Util.extractLeftFactor(g);//TODO修正P的结构
     System.out.println("提取左因子后的文法:");
     g.printGrammar();
+
+    g.outputGrammer(filename);
 
   }
 

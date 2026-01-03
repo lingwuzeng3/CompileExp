@@ -1,10 +1,10 @@
-// src/parser/Semantic.java
 package Exp5.parser;
 
+import Exp5.lexer.Token;
+import Exp5.lexer.TokenType;
 import java.util.Stack;
 
 public class Semantic {
-    // 语义栈，用于存储表达式的值
     private Stack<Integer> valueStack;
     
     public Semantic() {
@@ -12,41 +12,72 @@ public class Semantic {
     }
     
     // 执行语义动作
-    public void executeAction(int production, String[] symbols) {
+    public void executeAction(int production) {
         switch (production) {
-            case 0: // L -> E
-                // 不做操作，结果已经在栈顶
-                break;
             case 1: // E -> E + T
-                int tVal = valueStack.pop();
-                int eVal = valueStack.pop();
+                if (valueStack.size() < 3) {
+                    valueStack.push(0);
+                    return;
+                }
+                int tVal = valueStack.pop();  // T的值
+                int plusVal = valueStack.pop(); // '+'的占位符
+                int eVal = valueStack.pop();  // E的值
                 valueStack.push(eVal + tVal);
                 break;
+                
             case 2: // E -> T
-                // 值已经在栈顶，不需要操作
+                // T的值已经在栈顶，不需要操作
                 break;
+                
             case 3: // T -> T * F
-                int fVal = valueStack.pop();
-                int tVal2 = valueStack.pop();
+                if (valueStack.size() < 3) {
+                    valueStack.push(0);
+                    return;
+                }
+                int fVal = valueStack.pop();  // F的值
+                int multiplyVal = valueStack.pop(); // '*'的占位符
+                int tVal2 = valueStack.pop(); // T的值
                 valueStack.push(tVal2 * fVal);
                 break;
+                
             case 4: // T -> F
-                // 值已经在栈顶
+                // F的值已经在栈顶，不需要操作
                 break;
+                
             case 5: // F -> ( E )
-                valueStack.pop(); // 弹出右括号
-                int eVal2 = valueStack.pop(); // 弹出E的值
-                valueStack.pop(); // 弹出左括号
+                if (valueStack.size() < 3) {
+                    valueStack.push(0);
+                    return;
+                }
+                int rparenVal = valueStack.pop(); // ')'的占位符
+                int eVal2 = valueStack.pop();    // E的值
+                int lparenVal = valueStack.pop(); // '('的占位符
                 valueStack.push(eVal2);
                 break;
+                
             case 6: // F -> i
-                // i的值已经在栈顶
+                // i的值已经在栈顶，不需要操作
+                break;
+                
+            case 0: // L -> E
+                // L -> E，不需要操作
                 break;
         }
     }
     
-    public void pushValue(int value) {
-        valueStack.push(value);
+    // 移进时压入值
+    public void pushTokenValue(Token token) {
+        if (token.getType() == TokenType.NUMBER) {
+            try {
+                int value = Integer.parseInt(token.getValue());
+                valueStack.push(value);
+            } catch (NumberFormatException e) {
+                valueStack.push(0);
+            }
+        } else {
+            // 对于运算符、括号等，压入0作为占位符
+            valueStack.push(0);
+        }
     }
     
     public int getResult() {

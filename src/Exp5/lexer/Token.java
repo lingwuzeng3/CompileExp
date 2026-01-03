@@ -1,5 +1,5 @@
-package Exp5.lexer;
 // src/lexer/Token.java
+package Exp5.lexer;
 
 public class Token {
     private TokenType type;
@@ -21,6 +21,10 @@ public class Token {
     
     @Override
     public String toString() {
-        return String.format("<%s, %s>", type.name(), value);
+        if (type == TokenType.NUMBER || type == TokenType.ID) {
+            return String.format("<%s, %s>", type.name(), value);
+        } else {
+            return String.format("<%s, %s>", value, value);
+        }
     }
 }

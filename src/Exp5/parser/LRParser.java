@@ -1,4 +1,3 @@
-// src/parser/LRParser.java
 package Exp5.parser;
 
 import Exp5.lexer.Token;
@@ -67,14 +66,14 @@ public class LRParser {
             // 获取ACTION表中的动作
             int symbolIndex = Grammar.getTerminalIndex(symbol);
             if (symbolIndex == -1) {
-                setError(tokenIndex, "Invalid symbol: " + symbol);
+                setError(tokenIndex, "非法符号: " + symbol);
                 return new ParseResult(false, 0, errorPosition, errorMessage);
             }
             
             String action = ACTION_TABLE[currentState][symbolIndex];
             
             if (action.isEmpty()) {
-                setError(tokenIndex, "Syntax error at token: " + token.getValue());
+                setError(tokenIndex, "语法错误，当前位置: " + token.getValue());
                 return new ParseResult(false, 0, tokenIndex, errorMessage);
             }
             
@@ -89,18 +88,8 @@ public class LRParser {
                 stateStack.push(nextState);
                 symbolStack.push(symbol);
                 
-                // 如果是数字，将值压入语义栈
-                if (token.getType() == TokenType.NUMBER) {
-                    try {
-                        int value = Integer.parseInt(token.getValue());
-                        semantic.pushValue(value);
-                    } catch (NumberFormatException e) {
-                        semantic.pushValue(0);
-                    }
-                } else if (token.getType() == TokenType.ID) {
-                    // 标识符的值设为0或从符号表中获取
-                    semantic.pushValue(0);
-                }
+                // 处理语义值
+                semantic.pushTokenValue(token);
                 
                 tokenIndex++;
             } 
@@ -110,25 +99,29 @@ public class LRParser {
                 int productionLength = Grammar.PRODUCTION_LENGTH[productionNum];
                 
                 // 弹出产生式右部的符号和状态
-                String[] poppedSymbols = new String[productionLength];
                 for (int i = 0; i < productionLength; i++) {
                     stateStack.pop();
-                    poppedSymbols[productionLength - 1 - i] = symbolStack.pop();
+                    symbolStack.pop();
                 }
                 
                 // 执行语义动作
-                semantic.executeAction(productionNum, poppedSymbols);
+                semantic.executeAction(productionNum);
                 
                 // 获取当前状态和产生式左部
                 int currentStateAfterPop = stateStack.peek();
-                String leftSymbol = getLeftSymbol(productionNum);
+                String leftSymbol = Grammar.getLeftSymbol(productionNum);
                 
                 // 查找GOTO表
                 int nonTerminalIndex = Grammar.getNonTerminalIndex(leftSymbol);
+                if (nonTerminalIndex == -1) {
+                    setError(tokenIndex, "非法非终结符: " + leftSymbol);
+                    return new ParseResult(false, 0, tokenIndex, errorMessage);
+                }
+                
                 int nextState = GOTO_TABLE[currentStateAfterPop][nonTerminalIndex];
                 
                 if (nextState == -1) {
-                    setError(tokenIndex, "GOTO error for symbol: " + leftSymbol);
+                    setError(tokenIndex, "GOTO错误，符号: " + leftSymbol);
                     return new ParseResult(false, 0, tokenIndex, errorMessage);
                 }
                 
@@ -156,19 +149,6 @@ public class LRParser {
                 return "#";
             default:
                 return "";
-        }
-    }
-    
-    private String getLeftSymbol(int productionNum) {
-        switch (productionNum) {
-            case 0: return "L";
-            case 1:
-            case 2: return "E";
-            case 3:
-            case 4: return "T";
-            case 5:
-            case 6: return "F";
-            default: return "";
         }
     }
     

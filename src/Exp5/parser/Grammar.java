@@ -1,30 +1,18 @@
-// src/parser/Grammar.java
 package Exp5.parser;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Grammar {
-    // 产生式列表
-    public static final int[][] PRODUCTIONS = {
-        {1},                // 0: L -> E
-        {2, 3},            // 1: E -> E + T
-        {4},               // 2: E -> T
-        {5, 6},            // 3: T -> T * F
-        {7},               // 4: T -> F
-        {8, 9, 10},        // 5: F -> ( E )
-        {11}               // 6: F -> i
-    };
-    
-    // 产生式长度
+    // 产生式右部的符号数量（与LR分析表的归约编号对应）
     public static final int[] PRODUCTION_LENGTH = {
-        1,  // L -> E
-        3,  // E -> E + T
-        1,  // E -> T
-        3,  // T -> T * F
-        1,  // T -> F
-        3,  // F -> ( E )
-        1   // F -> i
+        1,  // 0: L -> E
+        3,  // 1: E -> E + T
+        1,  // 2: E -> T
+        3,  // 3: T -> T * F
+        1,  // 4: T -> F
+        3,  // 5: F -> ( E )
+        1   // 6: F -> i
     };
     
     // 终结符映射
@@ -52,5 +40,18 @@ public class Grammar {
     
     public static int getNonTerminalIndex(String nonTerminal) {
         return NON_TERMINAL_MAP.getOrDefault(nonTerminal, -1);
+    }
+    
+    public static String getLeftSymbol(int productionNum) {
+        switch (productionNum) {
+            case 0: return "L";
+            case 1:
+            case 2: return "E";
+            case 3:
+            case 4: return "T";
+            case 5:
+            case 6: return "F";
+            default: return "";
+        }
     }
 }

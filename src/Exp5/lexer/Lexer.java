@@ -1,5 +1,4 @@
 package Exp5.lexer;
-// src/lexer/Lexer.java
 
 import java.io.*;
 import java.util.ArrayList;
@@ -113,21 +112,5 @@ public class Lexer {
         }
         
         return new Token(TokenType.ID, sb.toString(), line, startColumn);
-    }
-    
-    // 静态方法：分析表达式并生成令牌文件
-    public static String analyzeExpression(String expression, String outputPath) 
-            throws IOException {
-        Lexer lexer = new Lexer(expression);
-        List<Token> tokens = lexer.tokenize();
-        
-        File outputFile = new File(outputPath);
-        try (PrintWriter writer = new PrintWriter(outputFile)) {
-            for (Token token : tokens) {
-                writer.println(token);
-            }
-        }
-        
-        return outputFile.getAbsolutePath();
     }
 }

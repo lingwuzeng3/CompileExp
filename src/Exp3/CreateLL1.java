@@ -20,6 +20,7 @@ public class CreateLL1 {
     System.out.println("提取左因子后的文法:");
     g.printGrammar();
 
+    //将新文法输出到docs/new_filename.txt
     g.outputGrammer(filename);
 
   }

@@ -39,10 +39,11 @@ public class G {
     String[] rights = str.split("\\|");
     for(String right_part:rights){
       for(char c:right_part.toCharArray()){
+        //大写字母为非终结符，其余均算作终结符。
         if(Character.isUpperCase(c)){
           String s = String.valueOf(c);
           Vn.add(s);
-        }else if(Character.isLowerCase(c)){
+        }else{
             String s = String.valueOf(c);
             Vt.add(s);
         }
